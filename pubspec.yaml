@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   chips_choice_null_safety: ^2.0.6
   webview_flutter_upload: ^0.2.0
+  socket_io_client: ^1.0.2
 
 dev_dependencies:
   flutter_test:
