@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:playbook/models/message_model.dart';
+import 'package:playbook/pages/chat_page.dart';
 import 'package:playbook/utils/socket_io_client.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class SocketMethods {
@@ -25,10 +30,32 @@ class SocketMethods {
     }
   }
 
+  void sendMessage(String message, user, roomId) {
+    if (message.isNotEmpty) {
+      _socketClient.emit('send_message', {
+        'message': message,
+        'user': user,
+        'roomId': roomId,
+      });
+    }
+  }
+
   // LISTENERS
   void createRoomSuccessListener(BuildContext context) {
-    _socketClient.on('createRoomSuccess', (room) {
-      print(room);
+    _socketClient.on('createRoomSuccess', (data) {
+      final json = data;
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ChatPage(
+                name: json['nickname'],
+                roomId: json['roomId'],
+              )));
+    });
+  }
+
+  void messageListener(BuildContext context) {
+    _socketClient.on('new_message', (data) {
+      Provider.of<MessageModel>(context, listen: false)
+          .setMessage(data['message'], data['user']);
     });
   }
 }

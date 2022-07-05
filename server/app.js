@@ -12,7 +12,47 @@ var io = require("socket.io")(server);
 app.use(express.json());
 
 io.on("connection", (socket) => {
-  console.log("connected!");
+  console.log(`connected! ${socket.id}`);
+
+  socket.on("createRoom", async ({ nickname }) => {
+    console.log(nickname);
+    try {
+      const roomId = randomInt(100).toString();
+      console.log(roomId);
+      socket.join(roomId);
+      let data = {
+        roomId,
+        nickname,
+      };
+      io.to(roomId).emit("createRoomSuccess", data);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  socket.on("joinRoom", async ({ nickname, roomId }) => {
+    try {
+      console.log(`new connection : ${socket.id}`);
+      socket.join(roomId);
+      let data = {
+        roomId,
+        nickname,
+      };
+      io.to(roomId).emit("createRoomSuccess", data);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  socket.on("send_message", async ({ message, user, roomId }) => {
+    console.log(message);
+    console.log(user);
+    try {
+      let data = { message, user };
+      io.to(roomId).emit("new_message", data);
+    } catch (e) {
+      console.log(e);
+    }
+  });
 });
 
 server.listen(port, "0.0.0.0", () => {

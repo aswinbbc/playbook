@@ -10,18 +10,40 @@ class CreateGame extends StatefulWidget {
 
 class _CreateGameState extends State<CreateGame> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+  final SocketMethods _socketMethods = SocketMethods();
+
+  @override
+  void initState() {
+    super.initState();
+    _socketMethods.createRoomSuccessListener(context);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Column(children: [
         TextField(controller: _nameController),
-        ElevatedButton(onPressed: onPressed, child: Text("Create Room"))
+        ElevatedButton(onPressed: onPressed, child: Text("Create Room")),
+        TextField(controller: _nameController),
+        TextField(controller: _codeController),
+        ElevatedButton(onPressed: joinRoom, child: Text("Join Room")),
       ]),
     );
   }
 
   void onPressed() {
-    SocketMethods().createRoom(_nameController.text);
+    _socketMethods.createRoom(_nameController.text);
+  }
+
+  void joinRoom() {
+    _socketMethods.joinRoom(_nameController.text, _codeController.text);
   }
 }
