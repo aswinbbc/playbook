@@ -31,10 +31,10 @@ class _CreateGameState extends State<CreateGame> {
       appBar: AppBar(),
       body: Column(children: [
         TextField(controller: _nameController),
-        ElevatedButton(onPressed: onPressed, child: Text("Create Room")),
+        ElevatedButton(onPressed: onPressed, child: const Text("Create Room")),
         TextField(controller: _nameController),
         TextField(controller: _codeController),
-        ElevatedButton(onPressed: joinRoom, child: Text("Join Room")),
+        ElevatedButton(onPressed: joinRoom, child: const Text("Join Room")),
       ]),
     );
   }

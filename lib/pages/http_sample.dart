@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:playbook/models/post_model.dart';
 
 class HttpSample extends StatefulWidget {
   const HttpSample({Key? key}) : super(key: key);
@@ -21,11 +23,13 @@ class _HttpSampleState extends State<HttpSample> {
           future: getData(),
           builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
-              return Text(snapshot.data!);
+              final json = jsonDecode(snapshot.data!);
+              Post post = Post.fromJson(json);
+              return Text(post.body!);
             } else if (snapshot.hasError) {
-              return Text("error");
+              return const Icon(Icons.close);
             } else {
-              return Text("loading..");
+              return const CircularProgressIndicator();
             }
           },
         ),
@@ -37,9 +41,16 @@ class _HttpSampleState extends State<HttpSample> {
     http.Response response = await http
         .get(Uri.parse("https://jsonplaceholder.typicode.com/posts/1"));
 
-    print(response.statusCode);
-    print(response.body);
-    final json = jsonDecode(response.body);
-    return json['id'].toString();
+    log(response.statusCode.toString());
+    log(response.body);
+
+    // Map<String, dynamic> json = jsonDecode(response.body);
+
+    return response.body;
   }
+}
+
+sample() {
+  List<int> intList = [1, 2, 4, 5, 8, 7];
+  List<int> resultList = intList.map((singleInt) => singleInt * 2).toList();
 }

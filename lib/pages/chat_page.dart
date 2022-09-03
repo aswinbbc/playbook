@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../utils/socket_methods.dart';
 
 class ChatPage extends StatefulWidget {
-  ChatPage({Key? key, required this.name, required this.roomId})
+  const ChatPage({Key? key, required this.name, required this.roomId})
       : super(key: key);
   final String name, roomId;
   @override
@@ -26,34 +26,82 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Consumer<MessageModel>(
       builder: (context, messageModel, child) => Scaffold(
-        appBar: AppBar(title: Text('${widget.name} in ${widget.roomId}')),
+        appBar: AppBar(
+            title: Text('${widget.name} in chatroom : ${widget.roomId}')),
         body: Column(children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 9,
-                child: TextField(
-                  controller: _codeController,
-                ),
-              ),
-              Expanded(
-                child: IconButton(
-                  onPressed: send,
-                  icon: Icon(Icons.send),
-                ),
-              ),
-            ],
+          Expanded(
+            flex: 9,
+            child: ListView.builder(
+              reverse: true,
+              itemCount: messageModel.list.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                // return ListTile(
+                //   title: Text(messageModel.list.elementAt(index).message!),
+                //   subtitle: Text(messageModel.list.elementAt(index).user!),
+                // );
+                final bool isMe =
+                    messageModel.list.elementAt(index).user! != widget.name;
+                return Container(
+                  padding:
+                      EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+                  child: Align(
+                    alignment: (isMe ? Alignment.topLeft : Alignment.topRight),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: (isMe ? Colors.grey.shade200 : Colors.blue[200]),
+                      ),
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisAlignment: isMe
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            messageModel.list.elementAt(index).user!,
+                            style: TextStyle(fontSize: 10),
+                          ),
+                          Text(
+                            messageModel.list.elementAt(index).message!,
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
-          ListView.builder(
-            itemCount: messageModel.list.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(messageModel.list.elementAt(index).message!),
-                subtitle: Text(messageModel.list.elementAt(index).user!),
-              );
-            },
-          )
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
+              color: Colors.blueGrey[100],
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 9,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          hintText: "Write message...",
+                          hintStyle: TextStyle(color: Colors.black54),
+                          border: InputBorder.none),
+                      controller: _codeController,
+                    ),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      onPressed: send,
+                      icon: const Icon(Icons.send),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ]),
       ),
     );
@@ -62,5 +110,6 @@ class _ChatPageState extends State<ChatPage> {
   void send() {
     _socketMethods.sendMessage(
         _codeController.text, widget.name, widget.roomId);
+    _codeController.clear();
   }
 }

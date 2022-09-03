@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:playbook/hijul/main_page.dart';
 import 'package:playbook/models/message_model.dart';
 import 'package:playbook/pages/create_game.dart';
+import 'package:playbook/pages/server.dart';
 import 'package:provider/provider.dart';
 
 void main() {

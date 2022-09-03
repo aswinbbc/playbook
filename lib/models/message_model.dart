@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MessageModel extends ChangeNotifier {
   String? _message;
   String? _user;
-  List<Message> _list = [];
+  final List<Message> _list = [];
 
   setMessage(String message, String user) {
     _message = message;
@@ -13,7 +13,7 @@ class MessageModel extends ChangeNotifier {
   }
 
   String get message => _message!;
-  List<Message> get list => _list;
+  List<Message> get list => _list.reversed.toList();
   String get user => _user!;
 }
 

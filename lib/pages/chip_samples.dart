@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:chips_choice_null_safety/chips_choice_null_safety.dart';
 
@@ -28,25 +30,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text("Save"),
                   onPressed: () {
                     String result = "";
-                    resultList.forEach(
-                      (element) {
-                        if (element.isNotEmpty) {
-                          if (result.isNotEmpty) {
-                            if (element != resultList.last) {
-                              result += ", $element";
-                            } else {
-                              result += "and $element";
-                            }
-
-                            print("object: $element ${resultList.last}..");
+                    for (var element in resultList) {
+                      if (element.isNotEmpty) {
+                        if (result.isNotEmpty) {
+                          if (element != resultList.last) {
+                            result += ", $element";
                           } else {
-                            result = element;
+                            result += "and $element";
                           }
-                        }
-                      },
-                    );
 
-                    print(result.replaceAll("(.*), (.*)", " and "));
+                          log("object: $element ${resultList.last}..");
+                        } else {
+                          result = element;
+                        }
+                      }
+                    }
+
+                    log(result.replaceAll("(.*), (.*)", " and "));
                   }),
             ),
           ],
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return SingleCard(
               day: days[index],
               status: (status) {
-                print("${resultList.length - 1} $index");
+                log("${resultList.length - 1} $index");
                 resultList[index] = status;
               },
             );
@@ -86,7 +86,7 @@ class _SingleCardState extends State<SingleCard> {
 
   @override
   void initState() {
-    status = "not available" + widget.day;
+    status = "not available${widget.day}";
     super.initState();
   }
 
@@ -120,8 +120,8 @@ class _SingleCardState extends State<SingleCard> {
                   ? WeekStrip(
                       changedList: ((value) {
                         status = value.length == 3
-                            ? (widget.day + ' wholeday')
-                            : (widget.day + ' ' + value.join(", "));
+                            ? ('${widget.day} wholeday')
+                            : ('${widget.day} ${value.join(", ")}');
 
                         widget.status(status);
                       }),

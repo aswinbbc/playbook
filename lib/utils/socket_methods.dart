@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:playbook/models/message_model.dart';
 import 'package:playbook/pages/chat_page.dart';
+import 'package:playbook/pages/container_game.dart';
 import 'package:playbook/utils/socket_io_client.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -40,12 +39,19 @@ class SocketMethods {
     }
   }
 
+  void coverArea(user, roomId) {
+    _socketClient.emit('change_area', {
+      'user': user,
+      'roomId': roomId,
+    });
+  }
+
   // LISTENERS
   void createRoomSuccessListener(BuildContext context) {
     _socketClient.on('createRoomSuccess', (data) {
       final json = data;
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ChatPage(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => ContainerGame(
                 name: json['nickname'],
                 roomId: json['roomId'],
               )));
@@ -56,6 +62,12 @@ class SocketMethods {
     _socketClient.on('new_message', (data) {
       Provider.of<MessageModel>(context, listen: false)
           .setMessage(data['message'], data['user']);
+    });
+  }
+
+  void areaListener(BuildContext context, Function(String) areaChanged) {
+    _socketClient.on('area_changed', (data) {
+      areaChanged(data['user']);
     });
   }
 }
